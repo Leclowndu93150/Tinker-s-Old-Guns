@@ -16,9 +16,12 @@
   "modifier.tinkers_old_guns.simultaneous.requirement": "Requires Extra Barrel modifier",
   
   "tinkers_old_guns.gun.no_ammo": "No ammo loaded!",
+  "tinkers_old_guns.gun.reload.failure": "No compatible ammo found.",
   "tinkers_old_guns.gun.ammo_type.small": "Uses Small Ammo",
   "tinkers_old_guns.gun.ammo_type.medium": "Uses Medium Ammo",
   "tinkers_old_guns.gun.ammo_type.large": "Uses Large Ammo",
+  "tinkers_old_guns.tooltip.ammo": "Ammo: %s / %s",
+  "tinkers_old_guns.tooltip.loaded": "Loaded: %s",
   
   "itemGroup.tinkers_old_guns.guns": "Tinker's Old Guns",
   "itemGroup.tinkers_old_guns.gun_parts": "Tinker's Old Gun Parts"

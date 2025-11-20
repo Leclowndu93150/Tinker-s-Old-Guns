@@ -1,52 +1,64 @@
 package com.leclowndu93150.tinkers_old_guns.common;
 
-import com.zach2039.oldguns.api.ammo.AmmoTypes;
+import com.zach2039.oldguns.api.ammo.Ammo;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 public enum AmmoSize {
-    SMALL(List.of(
-        AmmoTypes.FirearmAmmo.SMALL_STONE_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.SMALL_IRON_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.SMALL_LEAD_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.SMALL_STONE_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.SMALL_IRON_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.SMALL_LEAD_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.SMALL_IRON_BUCKSHOT,
-        AmmoTypes.FirearmAmmo.SMALL_LEAD_BUCKSHOT
-    )),
-    MEDIUM(List.of(
-        AmmoTypes.FirearmAmmo.MEDIUM_STONE_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.MEDIUM_IRON_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.MEDIUM_LEAD_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.MEDIUM_STONE_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.MEDIUM_IRON_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.MEDIUM_LEAD_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.MEDIUM_IRON_BUCKSHOT,
-        AmmoTypes.FirearmAmmo.MEDIUM_LEAD_BUCKSHOT
-    )),
-    LARGE(List.of(
-        AmmoTypes.FirearmAmmo.LARGE_STONE_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.LARGE_IRON_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.LARGE_LEAD_MUSKET_BALL,
-        AmmoTypes.FirearmAmmo.LARGE_STONE_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.LARGE_IRON_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.LARGE_LEAD_BIRDSHOT,
-        AmmoTypes.FirearmAmmo.LARGE_IRON_BUCKSHOT,
-        AmmoTypes.FirearmAmmo.LARGE_LEAD_BUCKSHOT
-    ));
+    SMALL("small", 0.36f),
+    MEDIUM("medium", 0.48f),
+    LARGE("large", Float.MAX_VALUE);
 
-    private final List<AmmoTypes.FirearmAmmo> validAmmoTypes;
+    private final String keyword;
+    private final float maxProjectileSize;
 
-    AmmoSize(List<AmmoTypes.FirearmAmmo> validAmmoTypes) {
-        this.validAmmoTypes = validAmmoTypes;
+    AmmoSize(String keyword, float maxProjectileSize) {
+        this.keyword = keyword;
+        this.maxProjectileSize = maxProjectileSize;
     }
 
-    public List<AmmoTypes.FirearmAmmo> getValidAmmoTypes() {
-        return validAmmoTypes;
+    /**
+     * Attempts to resolve the ammo size from the provided stack using the registry name or projectile stats.
+     */
+    public static Optional<AmmoSize> fromStack(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Item item = stack.getItem();
+        ResourceLocation name = ForgeRegistries.ITEMS.getKey(item);
+        if (name != null) {
+            String path = name.getPath().toLowerCase(Locale.ROOT);
+            for (AmmoSize size : values()) {
+                if (size.matchesPath(path)) {
+                    return Optional.of(size);
+                }
+            }
+        }
+
+        if (item instanceof Ammo ammo) {
+            float projectileSize = ammo.getProjectileSize();
+            for (AmmoSize size : values()) {
+                if (projectileSize <= size.maxProjectileSize) {
+                    return Optional.of(size);
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
-    public boolean isValidAmmo(AmmoTypes.FirearmAmmo ammoType) {
-        return validAmmoTypes.contains(ammoType);
+    private boolean matchesPath(String path) {
+        if (!path.contains(keyword)) {
+            return false;
+        }
+        // ensure the keyword is a standalone segment (prefix/suffix) to avoid accidental matches
+        String token = "_" + keyword + "_";
+        return path.startsWith(keyword + "_") || path.endsWith("_" + keyword) || path.contains(token);
     }
 }

@@ -10,7 +10,7 @@ public class ModifiablePistolItem extends ModifiableGunItem {
     }
 
     @Override
-    protected int getBaseAmmoCapacity() {
+    public int getBaseAmmoCapacity() {
         return 1;
     }
 

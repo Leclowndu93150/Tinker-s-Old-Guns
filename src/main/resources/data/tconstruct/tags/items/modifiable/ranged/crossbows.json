@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "tinkers_old_guns:pistol",
+    "tinkers_old_guns:carbine",
+    "tinkers_old_guns:musket"
+  ]
+}

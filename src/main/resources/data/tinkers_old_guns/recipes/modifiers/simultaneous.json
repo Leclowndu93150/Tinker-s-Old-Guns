@@ -1,0 +1,25 @@
+{
+  "type": "tconstruct:modifier",
+  "tools": {
+    "tag": "tinkers_old_guns:modifiable/guns"
+  },
+  "inputs": [
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:tnt"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "name": "tinkers_old_guns:simultaneous"
+  },
+  "max_level": 1,
+  "slots": {
+    "abilities": 2
+  },
+  "requirements": "tinkers_old_guns:extra_barrel"
+}

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.leclowndu93150.tinkers_old_guns.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "tinkers_old_guns.refmap.json",
+  "mixins": [
+    "ShapelessVanillaMuzzleloaderReloadRecipeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

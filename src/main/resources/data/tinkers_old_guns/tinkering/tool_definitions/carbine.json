@@ -1,0 +1,43 @@
+{
+  "parts": [
+    {
+      "item": "tconstruct:bow_limb",
+      "tag": "tconstruct:parts/bow_limb",
+      "name": "barrel"
+    },
+    {
+      "item": "tconstruct:tough_handle",
+      "tag": "tconstruct:parts/tough_handle",
+      "name": "stock"
+    },
+    {
+      "item": "tconstruct:large_plate",
+      "tag": "tconstruct:parts/large_plate",
+      "name": "reinforcement"
+    },
+    {
+      "item": "tinkers_old_guns:flintlock_mechanism",
+      "tag": "tinkers_old_guns:parts/flintlock_mechanism",
+      "name": "mechanism"
+    }
+  ],
+  "stats": {
+    "tconstruct:attack_damage": 0.0,
+    "tconstruct:attack_speed": 1.0,
+    "tconstruct:durability": 300,
+    "tconstruct:projectile_damage": 8.0,
+    "tconstruct:velocity": 4.0,
+    "tconstruct:draw_speed": 1.2,
+    "tconstruct:accuracy": 0.85,
+    "tinkers_old_guns:water_inertia": 0.7
+  },
+  "multipliers": {
+    "tconstruct:durability": 2.0
+  },
+  "traits": [],
+  "slots": {
+    "upgrades": 3,
+    "abilities": 2,
+    "souls": 0
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "item.tinkers_old_guns.pistol": "Tinker's Pistol",
+  "item.tinkers_old_guns.carbine": "Tinker's Carbine",
+  "item.tinkers_old_guns.musket": "Tinker's Musket",
+  "item.tinkers_old_guns.flintlock_mechanism": "Flintlock Mechanism",
+  
+  "modifier.tinkers_old_guns.extra_barrel": "Extra Barrel",
+  "modifier.tinkers_old_guns.extra_barrel.description": "+%s ammo capacity",
+  "modifier.tinkers_old_guns.scattershot": "Scattershot",
+  "modifier.tinkers_old_guns.scattershot.description": "Fires 3 projectiles in a spread pattern",
+  "modifier.tinkers_old_guns.scattershot.trade_off": "-40%% damage per projectile",
+  "modifier.tinkers_old_guns.subaquatic": "Subaquatic",
+  "modifier.tinkers_old_guns.subaquatic.description": "Can fire underwater with reduced penalty",
+  "modifier.tinkers_old_guns.simultaneous": "Simultaneous",
+  "modifier.tinkers_old_guns.simultaneous.description": "Fires all loaded shots at once",
+  "modifier.tinkers_old_guns.simultaneous.requirement": "Requires Extra Barrel modifier",
+  
+  "tinkers_old_guns.gun.no_ammo": "No ammo loaded!",
+  "tinkers_old_guns.gun.ammo_type.small": "Uses Small Ammo",
+  "tinkers_old_guns.gun.ammo_type.medium": "Uses Medium Ammo",
+  "tinkers_old_guns.gun.ammo_type.large": "Uses Large Ammo",
+  
+  "itemGroup.tinkers_old_guns.guns": "Tinker's Old Guns",
+  "itemGroup.tinkers_old_guns.gun_parts": "Tinker's Old Gun Parts"
+}

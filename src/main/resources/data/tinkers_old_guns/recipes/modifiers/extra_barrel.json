@@ -1,0 +1,17 @@
+{
+  "type": "tconstruct:incremental_modifier",
+  "tools": {
+    "tag": "tinkers_old_guns:modifiable/guns"
+  },
+  "input": {
+    "item": "minecraft:iron_ingot"
+  },
+  "needed_per_level": 2,
+  "max_level": 3,
+  "result": {
+    "name": "tinkers_old_guns:extra_barrel"
+  },
+  "slots": {
+    "upgrades": 1
+  }
+}

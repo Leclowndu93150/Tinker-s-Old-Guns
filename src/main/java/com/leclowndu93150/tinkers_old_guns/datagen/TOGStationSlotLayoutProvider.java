@@ -1,0 +1,28 @@
+package com.leclowndu93150.tinkers_old_guns.datagen;
+
+import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunParts;
+import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunTools;
+import net.minecraft.data.PackOutput;
+import slimeknights.tconstruct.library.data.tinkering.AbstractStationSlotLayoutProvider;
+import slimeknights.tconstruct.tools.TinkerToolParts;
+
+public class TOGStationSlotLayoutProvider extends AbstractStationSlotLayoutProvider {
+    public TOGStationSlotLayoutProvider(PackOutput packOutput) {
+        super(packOutput);
+    }
+
+    @Override
+    protected void addLayouts() {
+        this.defineModifiable(TinkersGunTools.PISTOL)
+                .sortIndex(20)
+                .addInputItem(TinkerToolParts.bowLimb, 53, 22)
+                .addInputItem(TinkerToolParts.toolHandle, 15, 60)
+                .addInputItem(TinkersGunParts.FLINTLOCK_MECHANISM.get(), 43, 40)
+                .build();
+    }
+
+    @Override
+    public String getName() {
+        return "Tinkers' Old Guns Tinker Station Slot Layouts";
+    }
+}

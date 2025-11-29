@@ -8,6 +8,7 @@ import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunTools;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -48,6 +49,10 @@ public class TinkersOldGuns {
         TinkersGunModifiers.MODIFIERS.register(modEventBus);
         TinkersGunTabs.CREATIVE_TABS.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public static ResourceLocation rl(String path) {
+        return new ResourceLocation(MODID, path);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

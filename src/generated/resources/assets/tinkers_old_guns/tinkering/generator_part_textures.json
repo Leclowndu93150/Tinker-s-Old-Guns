@@ -1,0 +1,21 @@
+{
+  "parts": [
+    {
+      "path": "tinkers_old_guns:item/tool/parts/flintlock_mechanism",
+      "stat_type": "tconstruct:handle"
+    },
+    {
+      "path": "tinkers_old_guns:item/tool/pistol/limb_bottom",
+      "stat_type": "tconstruct:limb"
+    },
+    {
+      "path": "tinkers_old_guns:item/tool/pistol/handle",
+      "stat_type": "tconstruct:handle"
+    },
+    {
+      "path": "tinkers_old_guns:item/tool/pistol/flintlock_mechanism",
+      "stat_type": "tconstruct:handle"
+    }
+  ],
+  "replace": false
+}

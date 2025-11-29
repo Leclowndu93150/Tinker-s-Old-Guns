@@ -1,0 +1,14 @@
+{
+  "loader": "tconstruct:tool",
+  "parent": "forge:item/default-tool",
+  "textures": {
+    "limb_bottom":   "tinkers_old_guns:item/tool/musket/bow_limb",
+    "handle": "tinkers_old_guns:item/tool/musket/handle",
+    "flintlock_mechanism":  "tinkers_old_guns:item/tool/musket/flintlock_mechanism"
+  },
+  "parts": [
+    { "name": "handle", "index": 1 },
+    { "name": "limb_bottom",   "index": 0 },
+    { "name": "flintlock_mechanism",  "index": 2 }
+  ]
+}

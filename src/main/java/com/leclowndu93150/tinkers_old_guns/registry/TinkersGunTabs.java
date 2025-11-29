@@ -13,7 +13,6 @@ import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class TinkersGunTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TinkersOldGuns.MODID);
@@ -37,7 +36,7 @@ public class TinkersGunTabs {
 
     private static void addGunTabItems(CreativeModeTab.Output tab) {
         Consumer<ItemStack> output = tab::accept;
-        
+
         acceptTool(output, TinkersGunTools.PISTOL);
         acceptTool(output, TinkersGunTools.CARBINE);
         acceptTool(output, TinkersGunTools.MUSKET);
@@ -45,15 +44,15 @@ public class TinkersGunTabs {
 
     private static void addGunPartTabItems(CreativeModeTab.Output tab) {
         Consumer<ItemStack> output = tab::accept;
-        
+
         acceptPart(output, TinkersGunParts.FLINTLOCK_MECHANISM);
     }
 
-    private static void acceptTool(Consumer<ItemStack> output, RegistryObject<? extends IModifiable> tool) {
+    private static void acceptTool(Consumer<ItemStack> output, ItemObject<? extends IModifiable> tool) {
         ToolBuildHandler.addVariants(output, tool.get(), "");
     }
 
-    private static void acceptPart(Consumer<ItemStack> output, RegistryObject<? extends IMaterialItem> item) {
+    private static void acceptPart(Consumer<ItemStack> output, ItemObject<? extends IMaterialItem> item) {
         item.get().addVariants(output, "");
     }
 }

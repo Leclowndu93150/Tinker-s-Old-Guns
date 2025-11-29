@@ -2,13 +2,14 @@
   "loader": "tconstruct:tool",
   "parent": "forge:item/default-tool",
   "textures": {
-    "limb_bottom":   "tinkers_old_guns:item/tool/carbine/bow_limb",
+    "limb_bottom": "tinkers_old_guns:item/tool/carbine/bow_limb",
     "handle": "tinkers_old_guns:item/tool/carbine/handle_0",
-    "flintlock_mechanism":  "tinkers_old_guns:item/tool/carbine/flintlock_mechanism"
+    "flintlock_mechanism": "tinkers_old_guns:item/tool/carbine/flintlock_mechanism"
   },
+  "modifier_roots": [ "tinkers_old_guns:item/tool/carbine/modifiers/" ],
   "parts": [
     { "name": "handle", "index": 1 },
-    { "name": "limb_bottom",   "index": 0 },
-    { "name": "flintlock_mechanism",  "index": 2 }
+    { "name": "limb_bottom", "index": 0 },
+    { "name": "flintlock_mechanism", "index": 2 }
   ]
 }

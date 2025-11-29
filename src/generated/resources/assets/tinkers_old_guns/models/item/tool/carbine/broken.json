@@ -1,0 +1,27 @@
+{
+  "loader": "tconstruct:tool",
+  "parent": "forge:item/default-tool",
+  "textures": {
+    "limb_bottom": "tinkers_old_guns:item/tool/carbine/bow_limb_broken",
+    "handle": "tinkers_old_guns:item/tool/carbine/handle_0_broken",
+    "flintlock_mechanism": "tinkers_old_guns:item/tool/carbine/flintlock_mechanism_broken"
+  },
+  "modifier_roots": [
+    "tinkers_old_guns:item/tool/carbine/modifiers/broken/",
+    "tinkers_old_guns:item/tool/carbine/modifiers/"
+  ],
+  "parts": [
+    {
+      "name": "handle",
+      "index": 1
+    },
+    {
+      "name": "limb_bottom",
+      "index": 0
+    },
+    {
+      "name": "flintlock_mechanism",
+      "index": 2
+    }
+  ]
+}

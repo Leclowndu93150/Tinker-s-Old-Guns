@@ -36,7 +36,10 @@ public class TOGToolItemModelProvider extends AbstractToolItemModelProvider {
     @Override
     protected void addModels() throws IOException {
         JsonObject toolBlocking = GsonHelper.parse(PROPS);
-        this.tool(() -> TinkersGunTools.PISTOL.get().getToolDefinition().getId(), toolBlocking);
+        // Generate blocking and broken model variants for each gun
+        tool(TinkersGunTools.PISTOL, toolBlocking, "limb_bottom", "handle", "flintlock_mechanism");
+        tool(TinkersGunTools.CARBINE, toolBlocking, "limb_bottom", "handle", "flintlock_mechanism");
+        tool(TinkersGunTools.MUSKET, toolBlocking, "limb_bottom", "handle", "flintlock_mechanism");
     }
 
     @Override

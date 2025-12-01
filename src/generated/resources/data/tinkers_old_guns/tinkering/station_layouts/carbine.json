@@ -1,6 +1,6 @@
 {
   "icon": {
-    "item": "tinkers_old_guns:pistol",
+    "item": "tinkers_old_guns:carbine",
     "nbt": "{Damage:0,tic_broken:0b,tic_display:1b,tic_materials:[\"tconstruct:ui_render#head\",\"tconstruct:ui_render#handle\",\"tconstruct:ui_render#extra\",\"tconstruct:ui_render#large\",\"tconstruct:ui_render#extra_large\"]}"
   },
   "input_slots": [
@@ -10,8 +10,8 @@
       },
       "icon": "tconstruct:bow_limb",
       "translation_key": "item.tconstruct.bow_limb",
-      "x": 22,
-      "y": 32
+      "x": 53,
+      "y": 22
     },
     {
       "filter": {
@@ -19,7 +19,7 @@
       },
       "icon": "tconstruct:tool_handle",
       "translation_key": "item.tconstruct.tool_handle",
-      "x": 32,
+      "x": 15,
       "y": 60
     },
     {
@@ -32,6 +32,6 @@
       "y": 40
     }
   ],
-  "sortIndex": 20,
-  "translation_key": "item.tinkers_old_guns.pistol"
+  "sortIndex": 21,
+  "translation_key": "item.tinkers_old_guns.carbine"
 }

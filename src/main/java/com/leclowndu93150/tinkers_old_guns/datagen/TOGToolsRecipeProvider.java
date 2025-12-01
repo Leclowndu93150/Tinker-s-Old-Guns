@@ -22,6 +22,8 @@ public class TOGToolsRecipeProvider extends RecipeProvider implements IMaterialR
         String folder = "tools/building/";
 
         this.toolBuilding(consumer, TinkersGunTools.PISTOL, folder);
+        this.toolBuilding(consumer, TinkersGunTools.CARBINE, folder);
+        this.toolBuilding(consumer, TinkersGunTools.MUSKET, folder);
     }
 
     @Override

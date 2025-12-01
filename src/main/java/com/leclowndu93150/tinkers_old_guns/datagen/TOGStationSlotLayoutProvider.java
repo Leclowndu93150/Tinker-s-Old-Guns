@@ -15,8 +15,21 @@ public class TOGStationSlotLayoutProvider extends AbstractStationSlotLayoutProvi
     protected void addLayouts() {
         this.defineModifiable(TinkersGunTools.PISTOL)
                 .sortIndex(20)
+                .addInputItem(TinkerToolParts.bowLimb, 22, 32)
+                .addInputItem(TinkerToolParts.toolHandle, 32, 60)
+                .addInputItem(TinkersGunParts.FLINTLOCK_MECHANISM.get(), 43, 40)
+                .build();
+        this.defineModifiable(TinkersGunTools.CARBINE)
+                .sortIndex(21)
                 .addInputItem(TinkerToolParts.bowLimb, 53, 22)
                 .addInputItem(TinkerToolParts.toolHandle, 15, 60)
+                .addInputItem(TinkersGunParts.FLINTLOCK_MECHANISM.get(), 43, 40)
+                .build();
+        this.defineModifiable(TinkersGunTools.MUSKET)
+                .sortIndex(22)
+                .addInputItem(TinkerToolParts.bowLimb, 53, 22)
+                .addInputItem(TinkerToolParts.toughHandle, 15, 60)
+                .addInputItem(TinkerToolParts.largePlate, 10, 18)
                 .addInputItem(TinkersGunParts.FLINTLOCK_MECHANISM.get(), 43, 40)
                 .build();
     }

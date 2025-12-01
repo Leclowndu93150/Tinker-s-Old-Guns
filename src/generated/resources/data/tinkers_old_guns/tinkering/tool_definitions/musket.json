@@ -4,7 +4,8 @@
       "type": "tconstruct:part_stats",
       "parts": [
         "tconstruct:bow_limb",
-        "tconstruct:tool_handle",
+        "tconstruct:tough_handle",
+        "tconstruct:large_plate",
         "tinkers_old_guns:flintlock_mechanism"
       ],
       "primary_part": 0
@@ -12,6 +13,10 @@
     {
       "type": "tconstruct:default_materials",
       "materials": [
+        {
+          "type": "tconstruct:random",
+          "tier": 1
+        },
         {
           "type": "tconstruct:random",
           "tier": 1

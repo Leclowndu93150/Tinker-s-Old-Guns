@@ -2,6 +2,7 @@ package com.leclowndu93150.tinkers_old_guns.common.item.gun;
 
 import com.leclowndu93150.tinkers_old_guns.common.AmmoSize;
 import com.leclowndu93150.tinkers_old_guns.common.util.GunAmmoHelper;
+import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunModifiers;
 import com.zach2039.oldguns.api.ammo.FirearmAmmo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -56,20 +57,33 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
             return InteractionResultHolder.fail(gun);
         }
 
-        if (GunAmmoHelper.getCurrentAmmoCount(gun) > 0) {
-            player.startUsingItem(hand);
-            return InteractionResultHolder.consume(gun);
+        int currentAmmo = GunAmmoHelper.getCurrentAmmoCount(gun);
+        int capacity = GunAmmoHelper.getAmmoCapacity(tool);
+
+        // If barrel is not full and we have ammo, reload instead of shooting
+        if (currentAmmo < capacity) {
+            ItemStack ammoStack = findAmmo(player, gun);
+            if (!ammoStack.isEmpty()) {
+                int loaded = reloadAll(gun, ammoStack, player, tool);
+                if (loaded > 0) {
+                    return InteractionResultHolder.sidedSuccess(gun, level.isClientSide);
+                }
+            }
+            // If no ammo to reload but we have some loaded, allow shooting
+            if (currentAmmo > 0) {
+                player.startUsingItem(hand);
+                return InteractionResultHolder.consume(gun);
+            }
+            // No ammo at all
+            if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable("tinkers_old_guns.gun.reload.failure"), true);
+            }
+            return InteractionResultHolder.fail(gun);
         }
 
-        ItemStack ammoStack = findAmmo(player, gun);
-        if (!ammoStack.isEmpty() && reload(gun, ammoStack, player)) {
-            return InteractionResultHolder.sidedSuccess(gun, level.isClientSide);
-        }
-
-        if (!level.isClientSide) {
-            player.displayClientMessage(Component.translatable("tinkers_old_guns.gun.reload.failure"), true);
-        }
-        return InteractionResultHolder.fail(gun);
+        // Barrel is full, shoot
+        player.startUsingItem(hand);
+        return InteractionResultHolder.consume(gun);
     }
 
     @Override
@@ -85,6 +99,15 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
 
         boolean fired = false;
         if (!level.isClientSide) {
+            // Check for water misfire unless Subaquatic modifier is present
+            boolean hasSubaquatic = tool.getModifierLevel(TinkersGunModifiers.SUBAQUATIC.getId()) > 0;
+            if (!hasSubaquatic && checkWaterMisfire(player, level)) {
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5f, 1.0f);
+                player.displayClientMessage(Component.translatable("tinkers_old_guns.gun.misfire.wet"), true);
+                return;
+            }
+
             int shotsFired = GunAmmoHelper.fireProjectiles(tool, stack, level, player);
             if (shotsFired > 0) {
                 fired = true;
@@ -103,6 +126,45 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
     protected int getReloadCooldown(ToolStack tool) {
         float drawSpeed = tool.getStats().get(ToolStats.DRAW_SPEED);
         return Math.max(1, (int) (20 / drawSpeed * getReloadSpeedMultiplier()));
+    }
+
+    /**
+     * Reloads all available ammo slots at once.
+     * @return number of ammo loaded
+     */
+    public int reloadAll(ItemStack gun, ItemStack ammo, Player player, ToolStack tool) {
+        if (!GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize)) {
+            return 0;
+        }
+
+        int capacity = GunAmmoHelper.getAmmoCapacity(tool);
+        int currentAmmo = GunAmmoHelper.getCurrentAmmoCount(gun);
+        int slotsToFill = capacity - currentAmmo;
+        int availableAmmo = player.getAbilities().instabuild ? slotsToFill : ammo.getCount();
+        int toLoad = Math.min(slotsToFill, availableAmmo);
+
+        if (toLoad <= 0) {
+            return 0;
+        }
+
+        int loaded = 0;
+        for (int i = 0; i < toLoad; i++) {
+            if (GunAmmoHelper.loadAmmo(gun, ammo)) {
+                loaded++;
+                if (!player.getAbilities().instabuild) {
+                    ammo.shrink(1);
+                }
+            } else {
+                break;
+            }
+        }
+
+        if (loaded > 0) {
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 0.5f, 1.2f);
+        }
+
+        return loaded;
     }
 
     public boolean reload(ItemStack gun, ItemStack ammo, Player player) {
@@ -158,5 +220,16 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    private boolean checkWaterMisfire(Player player, Level level) {
+        if (player.isInWater()) {
+            // Underwater: 90% misfire chance
+            return level.random.nextFloat() < 0.9f;
+        } else if (player.isInWaterOrRain()) {
+            // In rain: 25% misfire chance
+            return level.random.nextFloat() < 0.25f;
+        }
+        return false;
     }
 }

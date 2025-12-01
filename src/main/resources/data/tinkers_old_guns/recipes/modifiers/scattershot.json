@@ -14,10 +14,8 @@
       "item": "minecraft:gunpowder"
     }
   ],
-  "result": {
-    "name": "tinkers_old_guns:scattershot"
-  },
-  "max_level": 1,
+  "result": "tinkers_old_guns:scattershot",
+  "level": 1,
   "slots": {
     "abilities": 1
   }

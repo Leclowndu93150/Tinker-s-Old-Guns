@@ -4,14 +4,14 @@
     "tag": "tinkers_old_guns:modifiable/guns"
   },
   "input": {
-    "item": "minecraft:iron_ingot"
+    "item": "minecraft:tnt"
   },
-  "needed_per_level": 2,
+  "needed_per_level": 1,
   "level": {
     "min": 1,
     "max": 3
   },
-  "result": "tinkers_old_guns:extra_barrel",
+  "result": "tinkers_old_guns:explosive_ordnance",
   "slots": {
     "upgrades": 1
   }

@@ -3,19 +3,32 @@
   "item.tinkers_old_guns.carbine": "Tinker's Carbine",
   "item.tinkers_old_guns.musket": "Tinker's Musket",
   "item.tinkers_old_guns.flintlock_mechanism": "Flintlock Mechanism",
-  
+  "item.tinkers_old_guns.flintlock_mechanism_cast": "Flintlock Mechanism Gold Cast",
+  "item.tinkers_old_guns.flintlock_mechanism_sand_cast": "Flintlock Mechanism Sand Cast",
+  "item.tinkers_old_guns.flintlock_mechanism_red_sand_cast": "Flintlock Mechanism Red Sand Cast",
+
   "modifier.tinkers_old_guns.extra_barrel": "Extra Barrel",
-  "modifier.tinkers_old_guns.extra_barrel.description": "+%s ammo capacity",
+  "modifier.tinkers_old_guns.extra_barrel.flavor": "More Dakka!",
+  "modifier.tinkers_old_guns.extra_barrel.description": "Adds an extra ammo slot per level",
+
   "modifier.tinkers_old_guns.scattershot": "Scattershot",
-  "modifier.tinkers_old_guns.scattershot.description": "Fires 3 projectiles in a spread pattern",
-  "modifier.tinkers_old_guns.scattershot.trade_off": "-40%% damage per projectile",
+  "modifier.tinkers_old_guns.scattershot.flavor": "Spread the love!",
+  "modifier.tinkers_old_guns.scattershot.description": "Fires multiple projectiles in a spread pattern at reduced damage",
+
   "modifier.tinkers_old_guns.subaquatic": "Subaquatic",
-  "modifier.tinkers_old_guns.subaquatic.description": "Can fire underwater with reduced penalty",
+  "modifier.tinkers_old_guns.subaquatic.flavor": "Waterproof!",
+  "modifier.tinkers_old_guns.subaquatic.description": "Prevents misfires from water and rain",
+
   "modifier.tinkers_old_guns.simultaneous": "Simultaneous",
-  "modifier.tinkers_old_guns.simultaneous.description": "Fires all loaded shots at once",
-  "modifier.tinkers_old_guns.simultaneous.requirement": "Requires Extra Barrel modifier",
-  
+  "modifier.tinkers_old_guns.simultaneous.flavor": "All at once!",
+  "modifier.tinkers_old_guns.simultaneous.description": "Fires all loaded shots at the same time",
+
+  "modifier.tinkers_old_guns.explosive_ordnance": "Explosive Ordnance",
+  "modifier.tinkers_old_guns.explosive_ordnance.flavor": "Now with 100%% more boom!",
+  "modifier.tinkers_old_guns.explosive_ordnance.description": "Projectiles create an explosion on impact, larger at higher levels",
+
   "tinkers_old_guns.gun.no_ammo": "No ammo loaded!",
+  "tinkers_old_guns.gun.misfire.wet": "Misfire! The powder is wet!",
   "tinkers_old_guns.gun.reload.failure": "No compatible ammo found.",
   "tinkers_old_guns.gun.ammo_type.small": "Uses Small Ammo",
   "tinkers_old_guns.gun.ammo_type.medium": "Uses Medium Ammo",

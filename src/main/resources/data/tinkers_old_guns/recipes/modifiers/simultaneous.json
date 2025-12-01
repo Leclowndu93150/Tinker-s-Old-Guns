@@ -14,12 +14,9 @@
       "item": "minecraft:redstone"
     }
   ],
-  "result": {
-    "name": "tinkers_old_guns:simultaneous"
-  },
-  "max_level": 1,
+  "result": "tinkers_old_guns:simultaneous",
+  "level": 1,
   "slots": {
     "abilities": 2
-  },
-  "requirements": "tinkers_old_guns:extra_barrel"
+  }
 }

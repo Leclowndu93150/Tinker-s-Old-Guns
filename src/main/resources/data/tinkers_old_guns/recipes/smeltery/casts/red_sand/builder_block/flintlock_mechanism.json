@@ -1,0 +1,11 @@
+{
+  "type": "tconstruct:item_part_builder",
+  "pattern": "tinkers_old_guns:flintlock_mechanism",
+  "pattern_item": {
+    "tag": "forge:sand/red"
+  },
+  "result": {
+    "count": 4,
+    "item": "tinkers_old_guns:flintlock_mechanism_red_sand_cast"
+  }
+}

@@ -14,10 +14,8 @@
       "item": "minecraft:prismarine_shard"
     }
   ],
-  "result": {
-    "name": "tinkers_old_guns:subaquatic"
-  },
-  "max_level": 1,
+  "result": "tinkers_old_guns:subaquatic",
+  "level": 1,
   "slots": {
     "upgrades": 1
   }

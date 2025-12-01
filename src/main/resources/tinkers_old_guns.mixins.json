@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "tinkers_old_guns.refmap.json",
   "mixins": [
+    "accessor.BulletProjectileAccessor",
     "EnderferenceModifierMixin",
     "HolyModifierMixin",
     "ImpalingModifierMixin",

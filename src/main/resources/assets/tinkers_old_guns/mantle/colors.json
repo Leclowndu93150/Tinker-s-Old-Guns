@@ -1,0 +1,9 @@
+{
+  "modifier.tinkers_old_guns": {
+    "extra_barrel":       "#B8B8B8",
+    "scattershot":        "#6B5344",
+    "subaquatic":         "#3AC5C5",
+    "simultaneous":       "#E03030",
+    "explosive_ordnance": "#FF6B00"
+  }
+}

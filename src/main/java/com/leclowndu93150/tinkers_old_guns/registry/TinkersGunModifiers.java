@@ -2,6 +2,7 @@ package com.leclowndu93150.tinkers_old_guns.registry;
 
 import com.leclowndu93150.tinkers_old_guns.TinkersOldGuns;
 import com.leclowndu93150.tinkers_old_guns.common.modifier.ExtraBarrelModifier;
+import com.leclowndu93150.tinkers_old_guns.common.modifier.ExplosiveOrdnanceModifier;
 import com.leclowndu93150.tinkers_old_guns.common.modifier.ScattershotModifier;
 import com.leclowndu93150.tinkers_old_guns.common.modifier.SimultaneousModifier;
 import com.leclowndu93150.tinkers_old_guns.common.modifier.SubaquaticModifier;
@@ -15,4 +16,5 @@ public class TinkersGunModifiers {
     public static final StaticModifier<ScattershotModifier> SCATTERSHOT = MODIFIERS.register("scattershot", ScattershotModifier::new);
     public static final StaticModifier<SubaquaticModifier> SUBAQUATIC = MODIFIERS.register("subaquatic", SubaquaticModifier::new);
     public static final StaticModifier<SimultaneousModifier> SIMULTANEOUS = MODIFIERS.register("simultaneous", SimultaneousModifier::new);
+    public static final StaticModifier<ExplosiveOrdnanceModifier> EXPLOSIVE_ORDNANCE = MODIFIERS.register("explosive_ordnance", ExplosiveOrdnanceModifier::new);
 }

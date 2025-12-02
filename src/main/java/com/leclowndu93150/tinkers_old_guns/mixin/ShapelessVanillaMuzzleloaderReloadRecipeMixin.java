@@ -15,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
-@Mixin(value = ShapelessVanillaMuzzleloaderReloadRecipe.class, remap = false)
+@Mixin(value = ShapelessVanillaMuzzleloaderReloadRecipe.class)
 public class ShapelessVanillaMuzzleloaderReloadRecipeMixin {
 
-    @Inject(method = "matches(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/world/level/Level;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "matches", at = @At("HEAD"), cancellable = true)
     private void onMatches(CraftingContainer craftingContainer, Level level, CallbackInfoReturnable<Boolean> cir) {
         ItemStack gunStack = ItemStack.EMPTY;
         ItemStack ammoStack = ItemStack.EMPTY;
@@ -48,7 +48,7 @@ public class ShapelessVanillaMuzzleloaderReloadRecipeMixin {
         }
     }
 
-    @Inject(method = "assemble(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/core/RegistryAccess;)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "assemble", at = @At("HEAD"), cancellable = true)
     private void onAssemble(CraftingContainer inv, RegistryAccess registryAccess, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack gunStack = ItemStack.EMPTY;
         ItemStack ammoStack = ItemStack.EMPTY;

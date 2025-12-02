@@ -3,14 +3,19 @@ package com.leclowndu93150.tinkers_old_guns.registry;
 import com.leclowndu93150.tinkers_old_guns.TinkersOldGuns;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import slimeknights.mantle.registration.object.ItemObject;
+import slimeknights.tconstruct.library.materials.MaterialRegistry;
+import slimeknights.tconstruct.library.materials.definition.MaterialVariantId;
 import slimeknights.tconstruct.library.tools.helper.ToolBuildHandler;
 import slimeknights.tconstruct.library.tools.item.IModifiable;
 import slimeknights.tconstruct.library.tools.part.IMaterialItem;
+import slimeknights.tconstruct.library.tools.part.ToolPartItem;
+import slimeknights.tconstruct.tools.stats.HeadMaterialStats;
 
 import java.util.function.Consumer;
 
@@ -29,7 +34,16 @@ public class TinkersGunTabs {
     public static final RegistryObject<CreativeModeTab> TAB_GUN_PARTS = CREATIVE_TABS.register(
         "gun_parts", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.tinkers_old_guns.gun_parts"))
-            .icon(() -> new ItemStack(TinkersGunParts.FLINTLOCK_MECHANISM.get()))
+            .icon(() -> {
+                MaterialVariantId material;
+                if (MaterialRegistry.isFullyLoaded()) {
+                    material = ToolBuildHandler.RANDOM.getMaterial(HeadMaterialStats.ID, RandomSource.create());
+                } else {
+                    material = ToolBuildHandler.getRenderMaterial(0);
+                }
+
+                return (TinkersGunParts.FLINTLOCK_MECHANISM.get()).withMaterialForDisplay(material);
+            })
             .displayItems((params, output) -> addGunPartTabItems(output))
             .build()
     );

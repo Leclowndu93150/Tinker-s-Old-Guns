@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "tinkers_old_guns:item/red_sand_cast/flintlock_mechanism"
+    "layer0": "tinkers_old_guns:item/cast/flintlock_mechanism_red_sand_cast"
   }
 }

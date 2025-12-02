@@ -1,0 +1,7 @@
+{
+  "parent": "forge:item/default",
+  "loader": "tconstruct:material",
+  "textures": {
+    "texture": "tinkers_old_guns:item/tool/parts/flintlock_mechanism"
+  }
+}

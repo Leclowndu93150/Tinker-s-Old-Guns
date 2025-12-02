@@ -7,6 +7,7 @@ import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunTabs;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunTools;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.food.FoodProperties;
@@ -34,21 +35,26 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
+import slimeknights.mantle.registration.deferred.ItemDeferredRegister;
+import slimeknights.mantle.registration.object.ItemObject;
+import slimeknights.tconstruct.common.registration.CastItemObject;
+import slimeknights.tconstruct.common.registration.ItemDeferredRegisterExtension;
+import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 
 @Mod(TinkersOldGuns.MODID)
 public class TinkersOldGuns {
-
     public static final String MODID = "tinkers_old_guns";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public TinkersOldGuns() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::addCreativeTabContents);
         TinkersGunTools.ITEMS.register(modEventBus);
         TinkersGunParts.ITEMS.register(modEventBus);
         TinkersGunModifiers.MODIFIERS.register(modEventBus);
         TinkersGunTabs.CREATIVE_TABS.register(modEventBus);
-        MinecraftForge.EVENT_BUS.register(this);
+
     }
 
     public static ResourceLocation rl(String path) {
@@ -58,4 +64,13 @@ public class TinkersOldGuns {
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(TinkersGunStats::init);
     }
+
+    private void addCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTab() == TinkerSmeltery.tabSmeltery.get()) {
+            event.accept(TinkersGunParts.FLINTLOCK_MECHANISM_CAST.get());
+            event.accept(TinkersGunParts.FLINTLOCK_MECHANISM_CAST.getSand());
+            event.accept(TinkersGunParts.FLINTLOCK_MECHANISM_CAST.getRedSand());
+        }
+    }
+
 }

@@ -10,16 +10,16 @@
       },
       "icon": "tconstruct:bow_limb",
       "translation_key": "item.tconstruct.bow_limb",
-      "x": 53,
-      "y": 22
+      "x": 21,
+      "y": 29
     },
     {
       "filter": {
-        "item": "tconstruct:tool_handle"
+        "item": "tconstruct:tough_handle"
       },
-      "icon": "tconstruct:tool_handle",
-      "translation_key": "item.tconstruct.tool_handle",
-      "x": 15,
+      "icon": "tconstruct:tough_handle",
+      "translation_key": "item.tconstruct.tough_handle",
+      "x": 51,
       "y": 60
     },
     {

@@ -45,7 +45,7 @@ public class TOGToolDefinitions extends AbstractToolDefinitionDataProvider {
         this.define(TinkersGunTools.CARBINE.get())
                 .module(PartStatsModule.parts()
                         .part(TinkerToolParts.bowLimb)
-                        .part(TinkerToolParts.toolHandle)
+                        .part(TinkerToolParts.toughHandle)
                         .part(TinkersGunParts.FLINTLOCK_MECHANISM)
                         .build())
                 .module(defaultFourParts)

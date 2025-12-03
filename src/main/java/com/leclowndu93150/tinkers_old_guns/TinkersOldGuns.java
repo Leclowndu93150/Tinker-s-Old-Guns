@@ -1,7 +1,6 @@
 package com.leclowndu93150.tinkers_old_guns;
 
 import com.leclowndu93150.tinkers_old_guns.common.TinkersGunStats;
-import com.leclowndu93150.tinkers_old_guns.config.TOGConfig;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunModifiers;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunParts;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunTabs;
@@ -35,6 +34,11 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
+import slimeknights.mantle.registration.deferred.ItemDeferredRegister;
+import slimeknights.mantle.registration.object.ItemObject;
+import slimeknights.tconstruct.common.registration.CastItemObject;
+import slimeknights.tconstruct.common.registration.ItemDeferredRegisterExtension;
+import slimeknights.tconstruct.smeltery.TinkerSmeltery;
 
 @Mod(TinkersOldGuns.MODID)
 public class TinkersOldGuns {
@@ -45,6 +49,7 @@ public class TinkersOldGuns {
     public TinkersOldGuns() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::addCreativeTabContents);
         TinkersGunTools.ITEMS.register(modEventBus);
         TinkersGunParts.ITEMS.register(modEventBus);
         TinkersGunModifiers.MODIFIERS.register(modEventBus);
@@ -53,6 +58,7 @@ public class TinkersOldGuns {
 
         // Register config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, TOGConfig.COMMON_SPEC);
+
     }
 
     public static ResourceLocation rl(String path) {
@@ -62,4 +68,13 @@ public class TinkersOldGuns {
     private void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(TinkersGunStats::init);
     }
+
+    private void addCreativeTabContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTab() == TinkerSmeltery.tabSmeltery.get()) {
+            event.accept(TinkersGunParts.FLINTLOCK_MECHANISM_CAST.get());
+            event.accept(TinkersGunParts.FLINTLOCK_MECHANISM_CAST.getSand());
+            event.accept(TinkersGunParts.FLINTLOCK_MECHANISM_CAST.getRedSand());
+        }
+    }
+
 }

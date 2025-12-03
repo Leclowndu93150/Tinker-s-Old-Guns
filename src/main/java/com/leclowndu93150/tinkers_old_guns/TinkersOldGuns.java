@@ -1,6 +1,7 @@
 package com.leclowndu93150.tinkers_old_guns;
 
 import com.leclowndu93150.tinkers_old_guns.common.TinkersGunStats;
+import com.leclowndu93150.tinkers_old_guns.config.TOGConfig;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunModifiers;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunParts;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunTabs;
@@ -49,6 +50,9 @@ public class TinkersOldGuns {
         TinkersGunModifiers.MODIFIERS.register(modEventBus);
         TinkersGunTabs.CREATIVE_TABS.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
+
+        // Register config
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, TOGConfig.COMMON_SPEC);
     }
 
     public static ResourceLocation rl(String path) {

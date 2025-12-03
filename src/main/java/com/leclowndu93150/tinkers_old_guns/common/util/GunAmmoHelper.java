@@ -9,6 +9,7 @@ import com.zach2039.oldguns.api.ammo.FirearmAmmo;
 import com.zach2039.oldguns.api.firearm.util.FirearmNBTHelper;
 import com.zach2039.oldguns.world.entity.BulletProjectile;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -28,6 +29,7 @@ import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,12 +40,41 @@ public class GunAmmoHelper {
 
     private GunAmmoHelper() {}
 
+    /**
+     * Checks if the ammo is buckshot by examining its registry name.
+     */
+    public static boolean isBuckshot(ItemStack ammo) {
+        return BuiltInRegistries.ITEM.getKey(ammo.getItem()).getPath().contains("buckshot");
+    }
+
+    /**
+     * Validates ammo without considering tool modifiers (for backwards compatibility).
+     */
     public static boolean isValidAmmo(ItemStack gun, ItemStack ammo, AmmoSize requiredSize) {
+        return isValidAmmo(gun, ammo, requiredSize, null);
+    }
+
+    /**
+     * Validates ammo considering tool modifiers like Scattershot.
+     * If the tool has Scattershot modifier, only buckshot ammo is allowed.
+     */
+    public static boolean isValidAmmo(ItemStack gun, ItemStack ammo, AmmoSize requiredSize, @Nullable IToolStackView tool) {
         if (!(gun.getItem() instanceof ModifiableGunItem) || !(ammo.getItem() instanceof FirearmAmmo)) {
             return false;
         }
         Optional<AmmoSize> ammoSize = AmmoSize.fromStack(ammo);
-        return ammoSize.map(size -> size == requiredSize).orElse(false);
+        if (!ammoSize.map(size -> size == requiredSize).orElse(false)) {
+            return false;
+        }
+
+        // If tool has Scattershot modifier, require buckshot ammo
+        if (tool != null && tool.getModifierLevel(TinkersGunModifiers.SCATTERSHOT.getId()) > 0) {
+            if (!isBuckshot(ammo)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static int getAmmoCapacity(IToolStackView tool) {

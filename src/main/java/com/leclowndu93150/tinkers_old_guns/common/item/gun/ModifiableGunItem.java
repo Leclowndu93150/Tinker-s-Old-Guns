@@ -28,6 +28,9 @@ import java.util.function.Predicate;
 public abstract class ModifiableGunItem extends ModifiableLauncherItem {
     protected final AmmoSize ammoSize;
 
+    /** Base cooldown after reloading in ticks (2 seconds) */
+    private static final int BASE_RELOAD_COOLDOWN_TICKS = 40;
+
     public ModifiableGunItem(Properties properties, ToolDefinition toolDefinition, AmmoSize ammoSize) {
         super(properties, toolDefinition);
         this.ammoSize = ammoSize;
@@ -58,30 +61,26 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         }
 
         int currentAmmo = GunAmmoHelper.getCurrentAmmoCount(gun);
-        int capacity = GunAmmoHelper.getAmmoCapacity(tool);
 
-        // If barrel is not full and we have ammo, reload instead of shooting
-        if (currentAmmo < capacity) {
-            ItemStack ammoStack = findAmmo(player, gun);
+        // Only allow reload when gun is completely empty
+        if (currentAmmo == 0) {
+            ItemStack ammoStack = findAmmo(player, gun, tool);
             if (!ammoStack.isEmpty()) {
                 int loaded = reloadAll(gun, ammoStack, player, tool);
                 if (loaded > 0) {
+                    // Apply post-reload cooldown
+                    player.getCooldowns().addCooldown(this, getPostReloadCooldown(tool));
                     return InteractionResultHolder.sidedSuccess(gun, level.isClientSide);
                 }
             }
-            // If no ammo to reload but we have some loaded, allow shooting
-            if (currentAmmo > 0) {
-                player.startUsingItem(hand);
-                return InteractionResultHolder.consume(gun);
-            }
-            // No ammo at all
+            // No valid ammo to reload
             if (!level.isClientSide) {
                 player.displayClientMessage(Component.translatable("tinkers_old_guns.gun.reload.failure"), true);
             }
             return InteractionResultHolder.fail(gun);
         }
 
-        // Barrel is full, shoot
+        // Gun has ammo, shoot
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(gun);
     }
@@ -129,11 +128,20 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
     }
 
     /**
+     * Gets the cooldown after reloading, scaled by DRAW_SPEED.
+     * Base is 2 seconds (40 ticks), reduced by higher draw speed.
+     */
+    protected int getPostReloadCooldown(ToolStack tool) {
+        float drawSpeed = tool.getStats().get(ToolStats.DRAW_SPEED);
+        return Math.max(10, (int) (BASE_RELOAD_COOLDOWN_TICKS / drawSpeed * getReloadSpeedMultiplier()));
+    }
+
+    /**
      * Reloads all available ammo slots at once.
      * @return number of ammo loaded
      */
     public int reloadAll(ItemStack gun, ItemStack ammo, Player player, ToolStack tool) {
-        if (!GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize)) {
+        if (!GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize, tool)) {
             return 0;
         }
 
@@ -167,8 +175,8 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         return loaded;
     }
 
-    public boolean reload(ItemStack gun, ItemStack ammo, Player player) {
-        if (!GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize)) {
+    public boolean reload(ItemStack gun, ItemStack ammo, Player player, ToolStack tool) {
+        if (!GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize, tool)) {
             return false;
         }
 
@@ -206,15 +214,15 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         return ammoSize;
     }
 
-    private ItemStack findAmmo(Player player, ItemStack gun) {
+    private ItemStack findAmmo(Player player, ItemStack gun, ToolStack tool) {
         ItemStack offhand = player.getOffhandItem();
-        if (GunAmmoHelper.isValidAmmo(gun, offhand, ammoSize)) {
+        if (GunAmmoHelper.isValidAmmo(gun, offhand, ammoSize, tool)) {
             return offhand;
         }
 
         Inventory inventory = player.getInventory();
         for (ItemStack stack : inventory.items) {
-            if (!stack.isEmpty() && GunAmmoHelper.isValidAmmo(gun, stack, ammoSize)) {
+            if (!stack.isEmpty() && GunAmmoHelper.isValidAmmo(gun, stack, ammoSize, tool)) {
                 return stack;
             }
         }

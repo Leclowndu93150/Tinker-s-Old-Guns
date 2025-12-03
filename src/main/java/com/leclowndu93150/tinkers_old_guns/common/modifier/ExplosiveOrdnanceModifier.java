@@ -1,5 +1,6 @@
 package com.leclowndu93150.tinkers_old_guns.common.modifier;
 
+import com.leclowndu93150.tinkers_old_guns.config.TOGConfig;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
@@ -47,13 +48,15 @@ public class ExplosiveOrdnanceModifier extends Modifier implements ProjectileHit
             Vec3 pos = projectile.position();
             float radius = BASE_EXPLOSION_RADIUS + (RADIUS_PER_LEVEL * (level - 1));
 
-            // Create explosion - does not break blocks (Level.ExplosionInteraction.NONE)
+            // Get explosion interaction mode from config
+            Level.ExplosionInteraction interaction = TOGConfig.COMMON.explosiveOrdnanceBlockInteraction.get();
+
             world.explode(
                 projectile.getOwner(),  // Source entity
                 pos.x, pos.y, pos.z,    // Position
                 radius,                  // Explosion radius
                 false,                   // No fire
-                Level.ExplosionInteraction.NONE  // No block destruction
+                interaction              // Configurable block destruction
             );
         }
     }

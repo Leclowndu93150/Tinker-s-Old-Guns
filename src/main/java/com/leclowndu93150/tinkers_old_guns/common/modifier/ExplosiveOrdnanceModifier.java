@@ -33,31 +33,46 @@ public class ExplosiveOrdnanceModifier extends Modifier implements ProjectileHit
 
     @Override
     public boolean onProjectileHitEntity(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, EntityHitResult hit, @Nullable LivingEntity attacker, @Nullable LivingEntity target) {
-        createExplosion(projectile, modifier.getLevel());
+        if (createExplosion(projectile, modifier.getLevel())) {
+            // Discard projectile after explosion to prevent repeated explosions
+            projectile.discard();
+        }
         return false;
     }
 
     @Override
     public void onProjectileHitBlock(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier, Projectile projectile, BlockHitResult hit, @Nullable LivingEntity attacker) {
-        createExplosion(projectile, modifier.getLevel());
+        if (createExplosion(projectile, modifier.getLevel())) {
+            // Discard projectile after explosion to prevent repeated explosions
+            projectile.discard();
+        }
     }
 
-    private void createExplosion(Projectile projectile, int level) {
+    /**
+     * Creates an explosion at the projectile's position.
+     * @return true if explosion was created, false if projectile was already removed
+     */
+    private boolean createExplosion(Projectile projectile, int level) {
         Level world = projectile.level();
-        if (!world.isClientSide) {
-            Vec3 pos = projectile.position();
-            float radius = BASE_EXPLOSION_RADIUS + (RADIUS_PER_LEVEL * (level - 1));
-
-            // Get explosion interaction mode from config
-            Level.ExplosionInteraction interaction = TOGConfig.COMMON.explosiveOrdnanceBlockInteraction.get();
-
-            world.explode(
-                projectile.getOwner(),  // Source entity
-                pos.x, pos.y, pos.z,    // Position
-                radius,                  // Explosion radius
-                false,                   // No fire
-                interaction              // Configurable block destruction
-            );
+        // Don't explode if already removed or on client side
+        if (world.isClientSide || projectile.isRemoved()) {
+            return false;
         }
+
+        Vec3 pos = projectile.position();
+        float radius = BASE_EXPLOSION_RADIUS + (RADIUS_PER_LEVEL * (level - 1));
+
+        // Get explosion interaction mode from config
+        Level.ExplosionInteraction interaction = TOGConfig.COMMON.explosiveOrdnanceBlockInteraction.get();
+
+        world.explode(
+            projectile.getOwner(),  // Source entity
+            pos.x, pos.y, pos.z,    // Position
+            radius,                  // Explosion radius
+            false,                   // No fire
+            interaction              // Configurable block destruction
+        );
+
+        return true;
     }
 }

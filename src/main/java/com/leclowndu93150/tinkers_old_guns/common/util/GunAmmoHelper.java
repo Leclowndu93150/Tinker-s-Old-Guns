@@ -118,7 +118,8 @@ public class GunAmmoHelper {
         int shotsToFire = fireAll ? available : 1;
         int firedShots = 0;
 
-        float velocity = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.VELOCITY);
+        // Double the base velocity for guns
+        float velocity = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.VELOCITY) * 2.0f;
         float damageModifier = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.PROJECTILE_DAMAGE);
         float waterInertia = ConditionalStatModifierHook.getModifiedStat(tool, shooter, TinkersGunStats.WATER_INERTIA);
         float baseInaccuracy = ModifierUtil.getInaccuracy(tool, shooter);

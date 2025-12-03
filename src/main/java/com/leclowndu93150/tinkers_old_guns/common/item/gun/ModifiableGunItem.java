@@ -4,9 +4,12 @@ import com.leclowndu93150.tinkers_old_guns.common.AmmoSize;
 import com.leclowndu93150.tinkers_old_guns.common.util.GunAmmoHelper;
 import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunModifiers;
 import com.zach2039.oldguns.api.ammo.FirearmAmmo;
+import com.zach2039.oldguns.init.ModSoundEvents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,8 +31,8 @@ import java.util.function.Predicate;
 public abstract class ModifiableGunItem extends ModifiableLauncherItem {
     protected final AmmoSize ammoSize;
 
-    /** Base cooldown after reloading in ticks (2 seconds) */
-    private static final int BASE_RELOAD_COOLDOWN_TICKS = 40;
+    /** Base cooldown after reloading in ticks (4 seconds) */
+    private static final int BASE_RELOAD_COOLDOWN_TICKS = 80;
 
     public ModifiableGunItem(Properties properties, ToolDefinition toolDefinition, AmmoSize ammoSize) {
         super(properties, toolDefinition);
@@ -110,11 +113,16 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
             int shotsFired = GunAmmoHelper.fireProjectiles(tool, stack, level, player);
             if (shotsFired > 0) {
                 fired = true;
-                level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.0f, 1.0f);
+                // Play Old Guns style firing sounds
+                playFireSound(level, player);
             }
         } else {
             fired = true;
+        }
+
+        // Spawn particles on client side
+        if (fired && level.isClientSide) {
+            spawnFireParticles(level, player);
         }
 
         if (fired) {
@@ -239,5 +247,98 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
             return level.random.nextFloat() < 0.25f;
         }
         return false;
+    }
+
+    /**
+     * Plays Old Guns style firing sounds based on ammo size.
+     * Matches FirearmEffectHelper from Old Guns mod.
+     */
+    private void playFireSound(Level level, Player player) {
+        double x = player.getX();
+        double y = player.getY();
+        double z = player.getZ();
+        java.util.Random rand = new java.util.Random();
+
+        switch (ammoSize) {
+            case SMALL -> {
+                // Small firearm: just explosion sound with higher pitch
+                level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS,
+                        1.0f, 2.5f / (rand.nextFloat() * 0.4f + 1.2f));
+            }
+            case MEDIUM -> {
+                // Medium firearm: bullet shoot + explosion
+                level.playSound(null, x, y, z, ModSoundEvents.BULLET_SHOOT.get(), SoundSource.PLAYERS,
+                        25.0f, 3.0f / (rand.nextFloat() * 0.6f + 1.2f));
+                level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS,
+                        1.0f, 1.5f / (rand.nextFloat() * 0.4f + 1.2f));
+            }
+            case LARGE -> {
+                // Large firearm: louder bullet shoot + deeper explosion
+                level.playSound(null, x, y, z, ModSoundEvents.BULLET_SHOOT.get(), SoundSource.PLAYERS,
+                        50.0f, 2.2f / (rand.nextFloat() * 0.6f + 1.2f));
+                level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS,
+                        1.0f, 1.0f / (rand.nextFloat() * 0.4f + 1.2f));
+            }
+        }
+    }
+
+    /**
+     * Spawns Old Guns style smoke and flame particles.
+     * Matches FirearmEffectHelper from Old Guns mod.
+     */
+    private void spawnFireParticles(Level level, Player player) {
+        java.util.Random rand = new java.util.Random();
+
+        // Particle count based on ammo size
+        int particleCount = switch (ammoSize) {
+            case SMALL -> 1 + rand.nextInt(2);   // 1-2 particles
+            case MEDIUM -> 2 + rand.nextInt(4);  // 2-5 particles
+            case LARGE -> 3 + rand.nextInt(6);   // 3-8 particles
+        };
+
+        double posX = player.getX();
+        double posY = player.getY() + player.getEyeHeight();
+        double posZ = player.getZ();
+        float rotationYaw = player.getYRot();
+        float rotationPitch = player.getXRot();
+
+        // Calculate hand offset based on which hand is used
+        InteractionHand hand = player.getUsedItemHand();
+        float offset = (hand == InteractionHand.MAIN_HAND) ? 30.0f : -30.0f;
+
+        for (int i = 0; i < particleCount; i++) {
+            // Calculate distance from player (increases per iteration)
+            float range = 1.2f * (0.8f * (i + 1));
+
+            // Calculate particle position using trigonometry (matches Old Guns exactly)
+            float handX = -Mth.sin((rotationYaw + offset / 1.5f) / 180.0f * (float) Math.PI)
+                    * Mth.cos(rotationPitch / 180.0f * (float) Math.PI) * range;
+            float handY = -Mth.sin(rotationPitch / 180.0f * (float) Math.PI) * range - 0.1f;
+            float handZ = Mth.cos((rotationYaw + offset / 1.5f) / 180.0f * (float) Math.PI)
+                    * Mth.cos(rotationPitch / 180.0f * (float) Math.PI) * range;
+
+            double particleX = posX + handX;
+            double particleY = posY + handY;
+            double particleZ = posZ + handZ;
+
+            // Spawn flame particle only on first iteration
+            if (i == 0) {
+                level.addParticle(ParticleTypes.FLAME, particleX, particleY, particleZ, 0, 0, 0);
+            }
+
+            // Spawn smoke particles with random offset
+            level.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                    particleX + (0.5f - rand.nextFloat()),
+                    particleY + (0.5f - rand.nextFloat()),
+                    particleZ + (0.5f - rand.nextFloat()),
+                    0, 0, 0);
+
+            // Spawn poof particles with random offset
+            level.addParticle(ParticleTypes.POOF,
+                    particleX + (0.5f - rand.nextFloat()),
+                    particleY + (0.5f - rand.nextFloat()),
+                    particleZ + (0.5f - rand.nextFloat()),
+                    0, 0, 0);
+        }
     }
 }

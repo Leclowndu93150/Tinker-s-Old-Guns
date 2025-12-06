@@ -7,6 +7,8 @@
   "item.tinkers_old_guns.flintlock_mechanism_sand_cast": "Flintlock Mechanism Sand Cast",
   "item.tinkers_old_guns.flintlock_mechanism_red_sand_cast": "Flintlock Mechanism Red Sand Cast",
 
+  "pattern.tinkers_old_guns.flintlock_mechanism": "Flintlock Mechanism",
+
   "modifier.tinkers_old_guns.extra_barrel": "Extra Barrel",
   "modifier.tinkers_old_guns.extra_barrel.flavor": "More Dakka!",
   "modifier.tinkers_old_guns.extra_barrel.description": "Adds an extra ammo slot per level",

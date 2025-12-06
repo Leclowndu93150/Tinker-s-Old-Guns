@@ -1,0 +1,8 @@
+{
+  "type": "tconstruct:table_casting_material",
+  "cast": {
+    "tag": "tinkers_old_guns:casts/multi_use/flintlock_mechanism"
+  },
+  "item_cost": 1,
+  "result": "tinkers_old_guns:flintlock_mechanism"
+}

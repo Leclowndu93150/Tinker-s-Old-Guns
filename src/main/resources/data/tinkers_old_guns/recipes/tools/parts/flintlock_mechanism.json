@@ -1,10 +1,16 @@
 {
   "type": "tconstruct:part_builder",
-  "pattern": {
-    "item": "tconstruct:gear_cast"
-  },
+  "cost": 1,
+  "pattern": "tinkers_old_guns:flintlock_mechanism",
+  "pattern_item": [
+    {
+      "tag": "tconstruct:patterns/default"
+    },
+    {
+      "item": "tinkers_old_guns:flintlock_mechanism_cast"
+    }
+  ],
   "result": {
     "item": "tinkers_old_guns:flintlock_mechanism"
-  },
-  "cost": 1
+  }
 }

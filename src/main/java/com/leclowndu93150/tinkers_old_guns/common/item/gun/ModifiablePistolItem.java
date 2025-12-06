@@ -23,4 +23,9 @@ public class ModifiablePistolItem extends ModifiableGunItem {
     public int getDefaultProjectileRange() {
         return 15;
     }
+
+    @Override
+    public float getBaseVelocity() {
+        return 3.5f;
+    }
 }

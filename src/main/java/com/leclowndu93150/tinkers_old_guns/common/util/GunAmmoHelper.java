@@ -28,6 +28,7 @@ import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
+import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import java.util.Optional;
 public class GunAmmoHelper {
     private static final float SCATTER_DAMAGE_MULTIPLIER = 0.6f;
     private static final float BASE_SCATTER_SPREAD = 6.0f;
+    /** Angle between multishot projectiles in degrees (matches TC bow behavior) */
+    private static final float MULTISHOT_ANGLE_OFFSET = 10.0f;
 
     private GunAmmoHelper() {}
 
@@ -105,6 +108,7 @@ public class GunAmmoHelper {
 
     /**
      * Fires projectiles from the provided gun/tool combination.
+     * Supports Multishot modifier (fires additional projectiles in a spread pattern).
      * @return number of ammo items consumed
      */
     public static int fireProjectiles(ToolStack tool, ItemStack gun, Level level, LivingEntity shooter) {
@@ -118,8 +122,14 @@ public class GunAmmoHelper {
         int shotsToFire = fireAll ? available : 1;
         int firedShots = 0;
 
-        // Double the base velocity for guns
-        float velocity = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.VELOCITY) * 2.0f;
+        // Multishot: fires additional projectiles in a spread (1 + 2*level projectiles)
+        int multishotLevel = tool.getModifierLevel(TinkerModifiers.multishot.getId());
+        int multishotCount = 1 + (2 * multishotLevel);
+        float multishotStartAngle = getMultishotStartAngle(multishotCount);
+
+        // Use gun-specific base velocity (matches Old Guns Flintlock values)
+        float baseVelocity = (tool.getItem() instanceof ModifiableGunItem gunItem) ? gunItem.getBaseVelocity() : 3.5f;
+        float velocity = baseVelocity * ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.VELOCITY);
         float damageModifier = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.PROJECTILE_DAMAGE);
         float waterInertia = ConditionalStatModifierHook.getModifiedStat(tool, shooter, TinkersGunStats.WATER_INERTIA);
         float baseInaccuracy = ModifierUtil.getInaccuracy(tool, shooter);
@@ -136,15 +146,27 @@ public class GunAmmoHelper {
             Ammo ammoData = ammoStack.getItem() instanceof Ammo ammo ? ammo : null;
             float effectiveRange = ammoData != null ? ammoData.getProjectileEffectiveRange() : 16f;
             float deviationModifier = ammoData != null ? ammoData.getProjectileDeviationModifier() : 1f;
-            List<BulletProjectile> projectiles = firearmAmmo.createProjectiles(level, ammoStack, shooter);
-            projectiles = applyScattershot(shooter, projectiles, scatterLevel);
-
             float inaccuracy = baseInaccuracy * deviationModifier;
-            for (int projectileIndex = 0; projectileIndex < projectiles.size(); projectileIndex++) {
-                BulletProjectile projectile = projectiles.get(projectileIndex);
-                boolean primary = projectileIndex == 0 && shotIndex == 0;
-                launchProjectile(tool, ammoStack, projectile, shooter, velocity, inaccuracy, effectiveRange * velocity, scatterAngle, damageModifier, waterInertia, modifiers, primary);
-                level.addFreshEntity(projectile);
+
+            // Fire multiple projectiles for multishot
+            int primaryMultishotIndex = multishotCount / 2; // Middle projectile is primary
+            for (int multishotIndex = 0; multishotIndex < multishotCount; multishotIndex++) {
+                // Create projectiles for this multishot instance
+                List<BulletProjectile> projectiles = firearmAmmo.createProjectiles(level, ammoStack, shooter);
+                projectiles = applyScattershot(shooter, projectiles, scatterLevel);
+
+                // Calculate multishot angle offset (spread evenly around center)
+                float multishotAngle = multishotStartAngle + (MULTISHOT_ANGLE_OFFSET * multishotIndex);
+
+                for (int projectileIndex = 0; projectileIndex < projectiles.size(); projectileIndex++) {
+                    BulletProjectile projectile = projectiles.get(projectileIndex);
+                    // Primary projectile is the first projectile of the middle multishot of the first shot
+                    boolean primary = projectileIndex == 0 && multishotIndex == primaryMultishotIndex && shotIndex == 0;
+                    launchProjectile(tool, ammoStack, projectile, shooter, velocity, inaccuracy,
+                            effectiveRange * velocity, scatterAngle, damageModifier, waterInertia,
+                            modifiers, primary, multishotAngle);
+                    level.addFreshEntity(projectile);
+                }
             }
         }
 
@@ -157,12 +179,28 @@ public class GunAmmoHelper {
         return firedShots;
     }
 
-    private static void launchProjectile(IToolStackView tool, ItemStack ammoStack, BulletProjectile projectile, LivingEntity shooter, float velocity, float inaccuracy, float effectiveRange, float scatterAngle, float damageModifier, float waterInertia, ModifierNBT modifiers, boolean primary) {
+    /**
+     * Gets the starting angle for multishot spread (to center the projectiles).
+     * For 3 projectiles: -10°, 0°, +10°
+     * For 5 projectiles: -20°, -10°, 0°, +10°, +20°
+     */
+    private static float getMultishotStartAngle(int count) {
+        return -MULTISHOT_ANGLE_OFFSET * (count - 1) / 2.0f;
+    }
+
+    /**
+     * Launches a projectile with multishot angle offset support.
+     * @param multishotAngle The horizontal angle offset for multishot spread (0 for no offset)
+     */
+    private static void launchProjectile(IToolStackView tool, ItemStack ammoStack, BulletProjectile projectile,
+                                         LivingEntity shooter, float velocity, float inaccuracy, float effectiveRange,
+                                         float scatterAngle, float damageModifier, float waterInertia,
+                                         ModifierNBT modifiers, boolean primary, float multishotAngle) {
         projectile.setEffectiveRange(effectiveRange);
         projectile.setLaunchLocation(shooter.position());
 
         RandomSource random = shooter.getRandom();
-        float yaw = shooter.getYRot();
+        float yaw = shooter.getYRot() + multishotAngle; // Apply multishot horizontal spread
         float pitch = shooter.getXRot();
         if (scatterAngle > 0f) {
             yaw += (random.nextFloat() - 0.5f) * scatterAngle;

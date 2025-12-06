@@ -6,6 +6,7 @@ import com.leclowndu93150.tinkers_old_guns.registry.TinkersGunModifiers;
 import com.zach2039.oldguns.api.ammo.FirearmAmmo;
 import com.zach2039.oldguns.init.ModSoundEvents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,10 +21,16 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import slimeknights.tconstruct.library.modifiers.ModifierEntry;
+import slimeknights.tconstruct.library.modifiers.ModifierHooks;
+import slimeknights.tconstruct.library.modifiers.hook.ranged.BowAmmoModifierHook;
 import slimeknights.tconstruct.library.tools.definition.ToolDefinition;
+import slimeknights.tconstruct.library.tools.helper.ToolDamageUtil;
 import slimeknights.tconstruct.library.tools.item.ranged.ModifiableLauncherItem;
+import slimeknights.tconstruct.library.tools.nbt.IToolStackView;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
+import slimeknights.tconstruct.tools.TinkerModifiers;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -33,6 +40,12 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
 
     /** Base cooldown after reloading in ticks (4 seconds) */
     private static final int BASE_RELOAD_COOLDOWN_TICKS = 80;
+
+    /** NBT key for per-stack cooldown tracking */
+    private static final String TAG_COOLDOWN_END = "tog_cooldown_end";
+
+    /** NBT key for marking ammo as coming from infinity modifier (uses durability instead of consuming) */
+    public static final String TAG_INFINITY_AMMO = "tog_infinity";
 
     public ModifiableGunItem(Properties properties, ToolDefinition toolDefinition, AmmoSize ammoSize) {
         super(properties, toolDefinition);
@@ -63,6 +76,11 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
             return InteractionResultHolder.fail(gun);
         }
 
+        // Check per-stack cooldown
+        if (isOnCooldown(gun, level)) {
+            return InteractionResultHolder.fail(gun);
+        }
+
         int currentAmmo = GunAmmoHelper.getCurrentAmmoCount(gun);
 
         // Only allow reload when gun is completely empty
@@ -71,8 +89,8 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
             if (!ammoStack.isEmpty()) {
                 int loaded = reloadAll(gun, ammoStack, player, tool);
                 if (loaded > 0) {
-                    // Apply post-reload cooldown
-                    player.getCooldowns().addCooldown(this, getPostReloadCooldown(tool));
+                    // Apply per-stack post-reload cooldown
+                    setCooldown(gun, level, getPostReloadCooldown(tool));
                     return InteractionResultHolder.sidedSuccess(gun, level.isClientSide);
                 }
             }
@@ -126,7 +144,8 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         }
 
         if (fired) {
-            player.getCooldowns().addCooldown(this, getReloadCooldown(tool));
+            // Apply per-stack cooldown instead of per-item cooldown
+            setCooldown(stack, level, getReloadCooldown(tool));
         }
     }
 
@@ -146,10 +165,15 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
 
     /**
      * Reloads all available ammo slots at once.
+     * Supports infinity ammo from modifiers (uses durability instead of consuming).
      * @return number of ammo loaded
      */
     public int reloadAll(ItemStack gun, ItemStack ammo, Player player, ToolStack tool) {
-        if (!GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize, tool)) {
+        // Check if this is infinity ammo from a modifier
+        boolean isInfinityAmmo = ammo.hasTag() && ammo.getTag().getBoolean(TAG_INFINITY_AMMO);
+
+        // For infinity ammo, we don't validate against gun ammo type since the modifier handles that
+        if (!isInfinityAmmo && !GunAmmoHelper.isValidAmmo(gun, ammo, ammoSize, tool)) {
             return 0;
         }
 
@@ -167,11 +191,23 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         for (int i = 0; i < toLoad; i++) {
             if (GunAmmoHelper.loadAmmo(gun, ammo)) {
                 loaded++;
-                if (!player.getAbilities().instabuild) {
+                if (!player.getAbilities().instabuild && !isInfinityAmmo) {
                     ammo.shrink(1);
                 }
             } else {
                 break;
+            }
+        }
+
+        // For infinity ammo, call the modifier's shrinkAmmo to consume durability
+        if (loaded > 0 && isInfinityAmmo && !player.getAbilities().instabuild) {
+            String modifierId = ammo.getTag().getString("tog_infinity_modifier");
+            for (ModifierEntry entry : tool.getModifierList()) {
+                if (entry.getId().toString().equals(modifierId)) {
+                    BowAmmoModifierHook hook = entry.getHook(ModifierHooks.BOW_AMMO);
+                    hook.shrinkAmmo(tool, entry, player, ammo, loaded);
+                    break;
+                }
             }
         }
 
@@ -218,11 +254,45 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
     public abstract int getBaseAmmoCapacity();
     protected abstract float getReloadSpeedMultiplier();
 
+    /**
+     * Gets the base projectile velocity for this gun type.
+     * Matches Old Guns Flintlock velocities so VELOCITY=1.0 equals Old Guns speed.
+     */
+    public abstract float getBaseVelocity();
+
     public AmmoSize getAmmoSize() {
         return ammoSize;
     }
 
+    /**
+     * Finds ammo for the gun, checking TC modifier hooks first (for Crystalshot etc.),
+     * then falling back to player inventory.
+     */
     private ItemStack findAmmo(Player player, ItemStack gun, ToolStack tool) {
+        Predicate<ItemStack> ammoPredicate = getAllSupportedProjectiles();
+
+        // First, check if any modifier provides infinite ammo (like Crystalshot/InfinityModule)
+        ItemStack standardAmmo = findStandardAmmo(player, gun, tool);
+        for (ModifierEntry entry : tool.getModifierList()) {
+            BowAmmoModifierHook hook = entry.getHook(ModifierHooks.BOW_AMMO);
+            ItemStack modifierAmmo = hook.findAmmo(tool, entry, player, standardAmmo, ammoPredicate);
+            if (!modifierAmmo.isEmpty()) {
+                // Mark as infinity ammo so we know to use durability instead of consuming
+                CompoundTag tag = modifierAmmo.getOrCreateTag();
+                tag.putBoolean(TAG_INFINITY_AMMO, true);
+                // Store which modifier provided this ammo for shrinkAmmo callback
+                tag.putString("tog_infinity_modifier", entry.getId().toString());
+                return modifierAmmo;
+            }
+        }
+
+        return standardAmmo;
+    }
+
+    /**
+     * Finds standard ammo from player inventory (offhand first, then main inventory).
+     */
+    private ItemStack findStandardAmmo(Player player, ItemStack gun, ToolStack tool) {
         ItemStack offhand = player.getOffhandItem();
         if (GunAmmoHelper.isValidAmmo(gun, offhand, ammoSize, tool)) {
             return offhand;
@@ -236,6 +306,44 @@ public abstract class ModifiableGunItem extends ModifiableLauncherItem {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    // ==================== Per-Stack Cooldown System ====================
+
+    /**
+     * Checks if this specific gun stack is on cooldown.
+     */
+    private boolean isOnCooldown(ItemStack gun, Level level) {
+        CompoundTag tag = gun.getTag();
+        if (tag == null || !tag.contains(TAG_COOLDOWN_END)) {
+            return false;
+        }
+        long cooldownEnd = tag.getLong(TAG_COOLDOWN_END);
+        return level.getGameTime() < cooldownEnd;
+    }
+
+    /**
+     * Sets a cooldown on this specific gun stack.
+     */
+    private void setCooldown(ItemStack gun, Level level, int ticks) {
+        CompoundTag tag = gun.getOrCreateTag();
+        tag.putLong(TAG_COOLDOWN_END, level.getGameTime() + ticks);
+    }
+
+    /**
+     * Gets the remaining cooldown percentage (0.0 to 1.0) for visual display.
+     */
+    public float getCooldownProgress(ItemStack gun, Level level, int maxCooldownTicks) {
+        CompoundTag tag = gun.getTag();
+        if (tag == null || !tag.contains(TAG_COOLDOWN_END)) {
+            return 0.0f;
+        }
+        long cooldownEnd = tag.getLong(TAG_COOLDOWN_END);
+        long remaining = cooldownEnd - level.getGameTime();
+        if (remaining <= 0) {
+            return 0.0f;
+        }
+        return Math.min(1.0f, (float) remaining / maxCooldownTicks);
     }
 
     private boolean checkWaterMisfire(Player player, Level level) {

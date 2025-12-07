@@ -38,7 +38,7 @@ public class TOGToolItemModelProvider extends AbstractToolItemModelProvider {
         JsonObject toolBlocking = GsonHelper.parse(PROPS);
         // Generate blocking and broken model variants for each gun
         tool(TinkersGunTools.PISTOL, toolBlocking, "limb_bottom", "handle", "flintlock_mechanism");
-        tool(TinkersGunTools.CARBINE, toolBlocking, "limb_bottom", "handle", "flintlock_mechanism");
+        tool(TinkersGunTools.CARBINE, toolBlocking, "limb_bottom", "bow_grip", "flintlock_mechanism");
         tool(TinkersGunTools.MUSKET, toolBlocking, "limb_bottom", "handle", "flintlock_mechanism");
     }
 

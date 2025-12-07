@@ -3,7 +3,7 @@
   "parent": "forge:item/default-tool",
   "textures": {
     "limb_bottom": "tinkers_old_guns:item/tool/carbine/bow_limb_broken",
-    "handle": "tinkers_old_guns:item/tool/carbine/handle_0_broken",
+    "bow_grip": "tinkers_old_guns:item/tool/carbine/handle_0_broken",
     "flintlock_mechanism": "tinkers_old_guns:item/tool/carbine/flintlock_mechanism_broken"
   },
   "modifier_roots": [
@@ -12,7 +12,7 @@
   ],
   "parts": [
     {
-      "name": "handle",
+      "name": "bow_grip",
       "index": 1
     },
     {

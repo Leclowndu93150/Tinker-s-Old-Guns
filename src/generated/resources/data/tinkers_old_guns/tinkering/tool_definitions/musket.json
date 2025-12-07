@@ -5,7 +5,7 @@
       "parts": [
         "tconstruct:bow_limb",
         "tconstruct:tough_handle",
-        "tconstruct:large_plate",
+        "tconstruct:bow_grip",
         "tinkers_old_guns:flintlock_mechanism"
       ],
       "primary_part": 0

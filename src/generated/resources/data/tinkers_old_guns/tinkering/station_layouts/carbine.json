@@ -15,10 +15,10 @@
     },
     {
       "filter": {
-        "item": "tconstruct:tough_handle"
+        "item": "tconstruct:bow_grip"
       },
-      "icon": "tconstruct:tough_handle",
-      "translation_key": "item.tconstruct.tough_handle",
+      "icon": "tconstruct:bow_grip",
+      "translation_key": "item.tconstruct.bow_grip",
       "x": 51,
       "y": 60
     },

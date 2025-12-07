@@ -24,10 +24,10 @@
     },
     {
       "filter": {
-        "item": "tconstruct:large_plate"
+        "item": "tconstruct:bow_grip"
       },
-      "icon": "tconstruct:large_plate",
-      "translation_key": "item.tconstruct.large_plate",
+      "icon": "tconstruct:bow_grip",
+      "translation_key": "item.tconstruct.bow_grip",
       "x": 50,
       "y": 60
     },

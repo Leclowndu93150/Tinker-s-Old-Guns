@@ -1,6 +1,6 @@
-// 1.20.1	2025-12-02T21:43:33.187743219	Tinker's Old Guns Tool Item Models
+// 1.20.1	2025-12-07T16:06:11.799090746	Tinker's Old Guns Tool Item Models
 29f4ad678b1413d986f1dae498d80c83d37c8488 assets/tinkers_old_guns/models/item/tool/carbine/blocking.json
-b3e392cd883be0596652818a2105878c787886ec assets/tinkers_old_guns/models/item/tool/carbine/broken.json
+5db66c6e12cc26a5fd046bf24ac5baf66543d6c8 assets/tinkers_old_guns/models/item/tool/carbine/broken.json
 dcb2dd24b13b7a6550efefbf2a08fff3e39de2a1 assets/tinkers_old_guns/models/item/tool/musket/blocking.json
 48e9dfd9dc1bbd5b6e4319dec4bfc786e2c7e399 assets/tinkers_old_guns/models/item/tool/musket/broken.json
 6408ab6b533399c8eb205e5e39244d96f380cc35 assets/tinkers_old_guns/models/item/tool/pistol/blocking.json

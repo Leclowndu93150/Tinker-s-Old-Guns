@@ -22,14 +22,14 @@ public class TOGStationSlotLayoutProvider extends AbstractStationSlotLayoutProvi
         this.defineModifiable(TinkersGunTools.CARBINE)
                 .sortIndex(21)
                 .addInputItem(TinkerToolParts.bowLimb, 21, 29)
-                .addInputItem(TinkerToolParts.toughHandle, 51, 60)
+                .addInputItem(TinkerToolParts.bowGrip, 51, 60)
                 .addInputItem(TinkersGunParts.FLINTLOCK_MECHANISM.get(), 43, 40)
                 .build();
         this.defineModifiable(TinkersGunTools.MUSKET)
                 .sortIndex(22)
                 .addInputItem(TinkerToolParts.bowLimb, 21, 29)
                 .addInputItem(TinkerToolParts.toughHandle, 29, 60)
-                .addInputItem(TinkerToolParts.largePlate, 50, 60)
+                .addInputItem(TinkerToolParts.bowGrip, 50, 60)
                 .addInputItem(TinkersGunParts.FLINTLOCK_MECHANISM.get(), 43, 40)
                 .build();
     }

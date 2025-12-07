@@ -25,6 +25,7 @@ public class TOGToolDefinitions extends AbstractToolDefinitionDataProvider {
     @Override
     protected void addToolDefinitions() {
         RandomMaterial tier1Material = RandomMaterial.random().tier(1).build();
+        DefaultMaterialsModule defaultThreeParts = DefaultMaterialsModule.builder().material(new RandomMaterial[]{tier1Material, tier1Material, tier1Material}).build();
         DefaultMaterialsModule defaultFourParts = DefaultMaterialsModule.builder().material(new RandomMaterial[]{tier1Material, tier1Material, tier1Material, tier1Material}).build();
         this.define(TinkersGunTools.PISTOL.get())
                 .module(PartStatsModule.parts()
@@ -32,7 +33,7 @@ public class TOGToolDefinitions extends AbstractToolDefinitionDataProvider {
                         .part(TinkerToolParts.toolHandle)
                         .part(TinkersGunParts.FLINTLOCK_MECHANISM)
                         .build())
-                .module(defaultFourParts)
+                .module(defaultThreeParts)
                 .module(new SetStatsModule(StatsNBT.builder()
                         .set(ToolStats.DURABILITY, 120.0F)
                         .set(ToolStats.ATTACK_DAMAGE, 0.0F)
@@ -45,10 +46,10 @@ public class TOGToolDefinitions extends AbstractToolDefinitionDataProvider {
         this.define(TinkersGunTools.CARBINE.get())
                 .module(PartStatsModule.parts()
                         .part(TinkerToolParts.bowLimb)
-                        .part(TinkerToolParts.toughHandle)
+                        .part(TinkerToolParts.bowGrip)
                         .part(TinkersGunParts.FLINTLOCK_MECHANISM)
                         .build())
-                .module(defaultFourParts)
+                .module(defaultThreeParts)
                 .module(new SetStatsModule(StatsNBT.builder()
                         .set(ToolStats.DURABILITY, 120.0F)
                         .set(ToolStats.ATTACK_DAMAGE, 0.0F)
@@ -62,7 +63,7 @@ public class TOGToolDefinitions extends AbstractToolDefinitionDataProvider {
                 .module(PartStatsModule.parts()
                         .part(TinkerToolParts.bowLimb)
                         .part(TinkerToolParts.toughHandle)
-                        .part(TinkerToolParts.largePlate)
+                        .part(TinkerToolParts.bowGrip)
                         .part(TinkersGunParts.FLINTLOCK_MECHANISM)
                         .build())
                 .module(defaultFourParts)

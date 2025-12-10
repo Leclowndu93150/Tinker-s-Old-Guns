@@ -15,8 +15,8 @@
     }
   ],
   "result": "tinkers_old_guns:scattershot",
-  "level": 1,
+  "max_level": 3,
   "slots": {
-    "abilities": 1
+    "upgrades": 1
   }
 }

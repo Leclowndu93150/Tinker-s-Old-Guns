@@ -5,6 +5,7 @@
   "refmap": "tinkers_old_guns.refmap.json",
   "mixins": [
     "accessor.BulletProjectileAccessor",
+    "BulletProjectileModifierMixin",
     "EnderferenceModifierMixin",
     "HolyModifierMixin",
     "ImpalingModifierMixin",

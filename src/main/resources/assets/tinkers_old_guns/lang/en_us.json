@@ -32,6 +32,7 @@
   "tinkers_old_guns.gun.no_ammo": "No ammo loaded!",
   "tinkers_old_guns.gun.misfire.wet": "Misfire! The powder is wet!",
   "tinkers_old_guns.gun.reload.failure": "No compatible ammo found.",
+  "tinkers_old_guns.gun.cooldown": "Cooldown: %ss",
   "tinkers_old_guns.gun.ammo_type.small": "Uses Small Ammo",
   "tinkers_old_guns.gun.ammo_type.medium": "Uses Medium Ammo",
   "tinkers_old_guns.gun.ammo_type.large": "Uses Large Ammo",

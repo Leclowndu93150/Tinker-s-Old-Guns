@@ -29,6 +29,7 @@ import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 import slimeknights.tconstruct.library.tools.stat.ToolStats;
 import slimeknights.tconstruct.tools.TinkerModifiers;
+import slimeknights.tconstruct.tools.data.ModifierIds;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class GunAmmoHelper {
-    private static final float SCATTER_DAMAGE_MULTIPLIER = 0.6f;
+    private static final float SCATTER_DAMAGE_MULTIPLIER = 0.2f;
     private static final float BASE_SCATTER_SPREAD = 6.0f;
     /** Angle between multishot projectiles in degrees (matches TC bow behavior) */
     private static final float MULTISHOT_ANGLE_OFFSET = 10.0f;
@@ -130,7 +131,6 @@ public class GunAmmoHelper {
         // Use gun-specific base velocity (matches Old Guns Flintlock values)
         float baseVelocity = (tool.getItem() instanceof ModifiableGunItem gunItem) ? gunItem.getBaseVelocity() : 3.5f;
         float velocity = baseVelocity * ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.VELOCITY);
-        float damageModifier = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.PROJECTILE_DAMAGE);
         float waterInertia = ConditionalStatModifierHook.getModifiedStat(tool, shooter, TinkersGunStats.WATER_INERTIA);
         float baseInaccuracy = ModifierUtil.getInaccuracy(tool, shooter);
         float scatterAngle = getScatterAngle(scatterLevel);
@@ -152,7 +152,14 @@ public class GunAmmoHelper {
             int primaryMultishotIndex = multishotCount / 2; // Middle projectile is primary
             for (int multishotIndex = 0; multishotIndex < multishotCount; multishotIndex++) {
                 // Create projectiles for this multishot instance
-                List<BulletProjectile> projectiles = firearmAmmo.createProjectiles(level, ammoStack, shooter);
+                // If Scattershot is active, create exactly 1 base projectile and let Scattershot handle the count
+                // Otherwise use ammo's normal projectile count (buckshot fires multiple)
+                List<BulletProjectile> projectiles;
+                if (scatterLevel > 0) {
+                    projectiles = createSingleProjectile(level, ammoStack, firearmAmmo, shooter);
+                } else {
+                    projectiles = firearmAmmo.createProjectiles(level, ammoStack, shooter);
+                }
                 projectiles = applyScattershot(shooter, projectiles, scatterLevel);
 
                 // Calculate multishot angle offset (spread evenly around center)
@@ -163,7 +170,7 @@ public class GunAmmoHelper {
                     // Primary projectile is the first projectile of the middle multishot of the first shot
                     boolean primary = projectileIndex == 0 && multishotIndex == primaryMultishotIndex && shotIndex == 0;
                     launchProjectile(tool, ammoStack, projectile, shooter, velocity, inaccuracy,
-                            effectiveRange * velocity, scatterAngle, damageModifier, waterInertia,
+                            effectiveRange * velocity, scatterAngle, waterInertia,
                             modifiers, primary, multishotAngle);
                     level.addFreshEntity(projectile);
                 }
@@ -194,7 +201,7 @@ public class GunAmmoHelper {
      */
     private static void launchProjectile(IToolStackView tool, ItemStack ammoStack, BulletProjectile projectile,
                                          LivingEntity shooter, float velocity, float inaccuracy, float effectiveRange,
-                                         float scatterAngle, float damageModifier, float waterInertia,
+                                         float scatterAngle, float waterInertia,
                                          ModifierNBT modifiers, boolean primary, float multishotAngle) {
         projectile.setEffectiveRange(effectiveRange);
         projectile.setLaunchLocation(shooter.position());
@@ -211,7 +218,18 @@ public class GunAmmoHelper {
         if (waterInertia != 0.6f) {
             projectile.setDeltaMovement(projectile.getDeltaMovement().scale(waterInertia / 0.6f));
         }
-        projectile.setDamage(projectile.getDamage() * damageModifier);
+        // Apply TC tool damage additively (like TC bows) rather than multiplicatively
+        // First add the tool's base PROJECTILE_DAMAGE stat, then apply modifiers (like Power) on top
+        float ammoDamage = (float) projectile.getDamage();
+        float baseDamage = ammoDamage + tool.getStats().get(ToolStats.PROJECTILE_DAMAGE);
+        float finalDamage = ConditionalStatModifierHook.getModifiedStat(tool, shooter, ToolStats.PROJECTILE_DAMAGE, baseDamage);
+        // Amplify Power modifier effect for guns: TC Power gives +1/level, we want +3/level total
+        // So add an extra +2 per Power level
+        int powerLevel = tool.getModifierLevel(ModifierIds.power);
+        if (powerLevel > 0) {
+            finalDamage += powerLevel * 2.0f;
+        }
+        projectile.setDamage(finalDamage);
 
         projectile.getCapability(EntityModifierCapability.CAPABILITY).ifPresent(cap -> {
             if (cap.getModifiers().isEmpty()) {
@@ -224,6 +242,22 @@ public class GunAmmoHelper {
         for (ModifierEntry entry : modifiers.getModifiers()) {
             entry.getHook(ModifierHooks.PROJECTILE_LAUNCH).onProjectileLaunch(tool, entry, shooter, ammoStack, projectile, null, projectileData, primary);
         }
+    }
+
+    /**
+     * Creates exactly one projectile from the ammo, ignoring the ammo's projectile count.
+     * Used by Scattershot to have full control over projectile count.
+     */
+    private static List<BulletProjectile> createSingleProjectile(Level level, ItemStack ammoStack, FirearmAmmo firearmAmmo, LivingEntity shooter) {
+        // Create all projectiles from the ammo, but only keep the first one
+        List<BulletProjectile> allProjectiles = firearmAmmo.createProjectiles(level, ammoStack, shooter);
+        if (allProjectiles.isEmpty()) {
+            return allProjectiles;
+        }
+        // Return only the first projectile
+        List<BulletProjectile> single = new ArrayList<>(1);
+        single.add(allProjectiles.get(0));
+        return single;
     }
 
     private static List<BulletProjectile> applyScattershot(LivingEntity shooter, List<BulletProjectile> projectiles, int scatterLevel) {

@@ -40,9 +40,10 @@ public class ShapelessVanillaMuzzleloaderReloadRecipeMixin {
             ToolStack tool = ToolStack.from(gunStack);
             ModifiableGunItem gunItem = (ModifiableGunItem) gunStack.getItem();
 
-            // Only allow reload when gun is completely empty
+            // Allow reload when gun has room for more ammo
+            int capacity = GunAmmoHelper.getAmmoCapacity(tool);
             if (!tool.isBroken() &&
-                GunAmmoHelper.getCurrentAmmoCount(gunStack) == 0 &&
+                GunAmmoHelper.getCurrentAmmoCount(gunStack) < capacity &&
                 GunAmmoHelper.isValidAmmo(gunStack, ammoStack, gunItem.getAmmoSize(), tool)) {
                 cir.setReturnValue(true);
             }

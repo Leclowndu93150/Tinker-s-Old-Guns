@@ -35,7 +35,6 @@ public class TinkersOldGuns {
         TinkersGunTabs.CREATIVE_TABS.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
 
-        // Register config
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, TOGConfig.COMMON_SPEC);
 
     }

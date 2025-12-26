@@ -27,7 +27,7 @@ import java.util.Objects;
  * These modifiers use ConditionalMeleeDamageModule which only works for melee hits,
  * so we need to manually apply the damage bonuses when bullets hit entities.
  */
-@Mixin(value = BulletProjectile.class)
+@Mixin(value = BulletProjectile.class, remap = false)
 public class BulletProjectileModifierMixin {
 
     @Unique
@@ -45,7 +45,7 @@ public class BulletProjectileModifierMixin {
     @Unique
     private static final ModifierId SUBAQUATIC_ID = new ModifierId("tinkers_old_guns", "subaquatic");
 
-    @Inject(method = "onHitEntity", at = @At("HEAD"))
+    @Inject(method = "onHitEntity", at = @At("HEAD"), remap = true)
     private void applyConditionalDamageModifiers(EntityHitResult result, CallbackInfo ci) {
         BulletProjectile bullet = (BulletProjectile) (Object) this;
         Entity target = result.getEntity();
@@ -134,7 +134,7 @@ public class BulletProjectileModifierMixin {
      * Override water inertia to return 1.0 (no slowdown) if the projectile has the Subaquatic modifier.
      * This allows bullets to travel just as far underwater as they would on land.
      */
-    @Inject(method = "getWaterInertia", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "getWaterInertia", at = @At("HEAD"), cancellable = true)
     private void subaquaticWaterInertia(CallbackInfoReturnable<Float> cir) {
         BulletProjectile bullet = (BulletProjectile) (Object) this;
         bullet.getCapability(EntityModifierCapability.CAPABILITY).ifPresent(cap -> {

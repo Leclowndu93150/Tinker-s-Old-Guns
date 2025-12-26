@@ -10,7 +10,7 @@
   "parts": [
     { "name": "handle", "index": 1 },
     { "name": "limb_bottom", "index": 0 },
-    { "name": "flintlock_mechanism", "index": 2 }
+    { "name": "flintlock_mechanism", "index": 3 }
   ],
   "display": {
     "thirdperson_righthand": {

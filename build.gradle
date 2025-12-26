@@ -146,11 +146,11 @@ dependencies {
 
     implementation fg.deobf("curse.maven:patchouli-306770:6164575")
     implementation fg.deobf("curse.maven:old-guns-mod-232682:5176196")
-    implementation fg.deobf("curse.maven:tinkers-construct-74072:6777068")
+    implementation fg.deobf("curse.maven:tinkers-construct-74072:7371800")
+    implementation fg.deobf("curse.maven:mantle-74924:7367477")
     implementation fg.deobf("curse.maven:mmmmmmmmmmmm-225738:6860192")
     implementation fg.deobf("curse.maven:selene-499980:7191950")
     implementation fg.deobf("curse.maven:jei-238222:7270446")
-    implementation fg.deobf("curse.maven:mantle-74924:6819217")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
 }

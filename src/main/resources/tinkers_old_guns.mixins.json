@@ -6,12 +6,12 @@
   "refmap": "tinkers_old_guns.refmap.json",
   "mixins": [
     "accessor.BulletProjectileAccessor",
+    "ArrowPierceModuleMixin",
     "BulletProjectileModifierMixin",
+    "BulletProjectileTinkersInterfaceMixin",
+    "ConditionalPowerModuleMixin",
     "EnderferenceModifierMixin",
-    "HolyModifierMixin",
-    "ImpalingModifierMixin",
-    "NecroticModifierMixin",
-    "PunchModifierMixin",
+    "ProjectileWithPowerMixin",
     "ShapelessVanillaMuzzleloaderReloadRecipeMixin"
   ],
   "injectors": {

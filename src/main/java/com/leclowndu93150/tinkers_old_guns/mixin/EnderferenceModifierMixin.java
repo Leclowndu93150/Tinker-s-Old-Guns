@@ -4,7 +4,6 @@ import com.leclowndu93150.tinkers_old_guns.mixin.accessor.BulletProjectileAccess
 import com.zach2039.oldguns.world.entity.BulletProjectile;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -20,23 +19,12 @@ import slimeknights.tconstruct.common.TinkerDamageTypes;
 import slimeknights.tconstruct.library.modifiers.ModifierEntry;
 import slimeknights.tconstruct.library.tools.nbt.ModDataNBT;
 import slimeknights.tconstruct.library.tools.nbt.ModifierNBT;
-import slimeknights.tconstruct.shared.TinkerEffects;
 import slimeknights.tconstruct.tools.modifiers.traits.melee.EnderferenceModifier;
 
 import javax.annotation.Nullable;
 
 @Mixin(value = EnderferenceModifier.class, remap = false)
 public class EnderferenceModifierMixin {
-
-    @Inject(method = "onProjectileHitEntity", at = @At("HEAD"))
-    private void onProjectileHitEntityBullet(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier,
-                                              Projectile projectile, EntityHitResult hit,
-                                              @Nullable LivingEntity attacker, @Nullable LivingEntity target,
-                                              CallbackInfoReturnable<Boolean> cir) {
-        if (target != null && !(projectile instanceof AbstractArrow) && projectile instanceof BulletProjectile) {
-            target.addEffect(new MobEffectInstance(TinkerEffects.enderference.get(), modifier.getLevel() * 100, 0, false, true, true));
-        }
-    }
 
     @Inject(method = "onProjectileHitEntity", at = @At("RETURN"), cancellable = true)
     private void onProjectileHitEntityEnderman(ModifierNBT modifiers, ModDataNBT persistentData, ModifierEntry modifier,
